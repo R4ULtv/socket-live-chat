@@ -3,15 +3,20 @@ import threading as t
 import random
 import json
 
+# load config file
+with open('config.json') as config:
+    config = json.load(config)
+
 # names file for random name
 with open('names.json') as names:
     names = json.load(names)
 
+# list of users that contains name, address(ip,port)
 users = []
 
 # setting up the socket
 socket = s.socket(s.AF_INET, s.SOCK_STREAM)
-socket.bind(("127.0.0.1", 1028))
+socket.bind((config["server"]["ip"], config["server"]["port"]))
 socket.listen(5)
 
 # connection function
