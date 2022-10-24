@@ -28,4 +28,4 @@ python client.py
 ```
 ## License
 
-MIT
+MIT - check [here](/LICENSE)
