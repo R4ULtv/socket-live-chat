@@ -5,14 +5,13 @@ import json
 with open('config.json') as config:
     config = json.load(config)
 
-
+# setting up the connection
 socket = s.socket(s.AF_INET, s.SOCK_STREAM)
 socket.connect((config["server"]["ip"], config["server"]["port"]))
 
-print("You are connected to the chat.")
-
+# client loop
 while True:
     string = str(input("You: "))
     if string != "":
-        socket.send(string.encode())
-        print(socket.recv(1024).decode('utf-8'))
+        socket.send(string.encode('utf-8'))
+        # print(socket.recv(1024).decode('utf-8'))

@@ -14,6 +14,9 @@ with open('names.json') as names:
 # list of users that contains name, address(ip,port)
 users = []
 
+# list of message
+messages = []
+
 # setting up the socket
 socket = s.socket(s.AF_INET, s.SOCK_STREAM)
 socket.bind((config["server"]["ip"], config["server"]["port"]))
@@ -21,13 +24,17 @@ socket.listen(5)
 
 # connection function
 def connection(s,a):
-    print(f"\t\t[-- {find_name(a)} as Connected --]")
+    name = find_name(a)
+    print(f"\t\t[-- {name} as Connected --]")
+
     while True:
         try:
-            print(f"{find_name(a)}: {str(s.recv(1024).decode('utf-8'))}")
-            s.send(" ".encode("utf-8"))
+            msg = s.recv(1024).decode('utf-8')
+
+            messages.append({"name": name, "msg": msg})
+
         except ConnectionResetError:
-            print(f"\t\t[-- {find_name(a)} as Disconnected --]")
+            print(f"\t\t[-- {name} as Disconnected --]")
             del_user(address=a)
             return
 
