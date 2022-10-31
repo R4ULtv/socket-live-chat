@@ -11,8 +11,8 @@ with open('config.json') as config:
 with open('names.json') as names:
     names = json.load(names)
 
-# list of users that contains name, address(ip,port)
-users = []
+# list of clients that contains name, address(ip,port)
+clients = []
 
 # list of message
 messages = []
@@ -23,7 +23,7 @@ socket.bind((config["server"]["ip"], config["server"]["port"]))
 socket.listen(5)
 
 # connection function
-def connection(s,a):
+def handle_client(s,a):
     name = find_name(a)
     print(f"\t\t[-- {name} as Connected --]")
 
@@ -40,23 +40,23 @@ def connection(s,a):
 
 # find the name based from ip and port
 def find_name(address):
-    for user in users:
-        if user["address"] == address:
-            return user["name"]
+    for client in clients:
+        if client["address"] == address:
+            return client["name"]
     return None
 
-# delete user from users list
+# delete client from clients list
 def del_user(name=None, address=None):
-    for user in users:
-        if user["name"] == name:
-            users.remove(user)
-        if user["address"] == address:
-            users.remove(user)
+    for client in clients:
+        if client["name"] == name:
+            client.remove(client)
+        if client["address"] == address:
+            client.remove(client)
 
 # server loop
 while True:
         sc,ad = socket.accept()
-        users.append({"name": random.choice(names), "address": (ad[0], ad[1])})
-        t.Thread(target = connection, args=(sc,ad)).start()
+        clients.append({"name": random.choice(names), "address": (ad[0], ad[1])})
+        t.Thread(target = handle_client, args=(sc,ad)).start()
         
     
