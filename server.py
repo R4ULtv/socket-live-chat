@@ -22,16 +22,18 @@ socket = s.socket(s.AF_INET, s.SOCK_STREAM)
 socket.bind((config["server"]["ip"], config["server"]["port"]))
 socket.listen(5)
 
-# connection function
-def handle_client(s,a):
-    name = find_name(a)
-    print(f"\t\t[-- {name} as Connected --]")
 
+# broadcast messages
+def broadcast(message):
+    for client in clients:
+        client.send(message)
+
+# handle clients
+def handle_client(s,a):
     while True:
         try:
             msg = s.recv(1024).decode('utf-8')
-
-            messages.append({"name": name, "msg": msg})
+            broadcast(msg.encode('utf-8'))
 
         except ConnectionResetError:
             print(f"\t\t[-- {name} as Disconnected --]")
@@ -56,7 +58,7 @@ def del_user(name=None, address=None):
 # server loop
 while True:
         sc,ad = socket.accept()
-        clients.append({"name": random.choice(names), "address": (ad[0], ad[1])})
+        clients.append(sc)
         t.Thread(target = handle_client, args=(sc,ad)).start()
         
     
