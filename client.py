@@ -13,7 +13,7 @@ socket.connect((config["server"]["ip"], config["server"]["port"]))
 # get the msgs from the socket
 def recive():
     while True:
-        print(socket.recv(1024).decode('utf-8'))
+        print(f"\n{socket.recv(1024).decode('utf-8')}")
 
 # get the input and send to the socket
 def send():
