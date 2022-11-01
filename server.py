@@ -23,7 +23,8 @@ socket.listen(5)
 # broadcast messages
 def broadcast(socket, message):
     for client in clients:
-        client.send(message)
+        if client != socket:
+            client.send(message)
 
 # handle clients
 def handle_client(s,a):
