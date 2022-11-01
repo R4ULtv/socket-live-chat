@@ -13,52 +13,44 @@ with open('names.json') as names:
 
 # list of clients that contains name, address(ip,port)
 clients = []
-
-# list of message
-messages = []
+aliases = []
 
 # setting up the socket
 socket = s.socket(s.AF_INET, s.SOCK_STREAM)
 socket.bind((config["server"]["ip"], config["server"]["port"]))
 socket.listen(5)
 
-
 # broadcast messages
-def broadcast(message):
+def broadcast(socket, message):
     for client in clients:
         client.send(message)
 
 # handle clients
 def handle_client(s,a):
+    alias = aliases[clients.index(s)]
+    print(f"\t\t[-- {alias} as Connected --]")
+
     while True:
         try:
-            msg = s.recv(1024).decode('utf-8')
-            broadcast(msg.encode('utf-8'))
+            msg = f"{alias}: {s.recv(1024).decode('utf-8')}"
+            broadcast(s, msg.encode('utf-8'))
 
         except ConnectionResetError:
-            print(f"\t\t[-- {name} as Disconnected --]")
-            del_user(address=a)
+            print(f"\t\t[-- {alias} as Disconnected --]")
+            del_client(s)
             return
 
-# find the name based from ip and port
-def find_name(address):
-    for client in clients:
-        if client["address"] == address:
-            return client["name"]
-    return None
-
 # delete client from clients list
-def del_user(name=None, address=None):
+def del_client(socket):
     for client in clients:
-        if client["name"] == name:
-            client.remove(client)
-        if client["address"] == address:
-            client.remove(client)
+        if client==socket:
+            clients.remove(client)
 
 # server loop
 while True:
         sc,ad = socket.accept()
         clients.append(sc)
+        aliases.append(random.choice(names))
         t.Thread(target = handle_client, args=(sc,ad)).start()
         
     
