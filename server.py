@@ -1,15 +1,10 @@
 import socket as s
-import threading as t
-import random
+import threading
 import json
 
 # load config file
 with open('config.json') as config:
     config = json.load(config)
-
-# names file for random name
-with open('names.json') as names:
-    names = json.load(names)
 
 # list of clients that contains name, address(ip,port)
 clients = []
@@ -29,8 +24,12 @@ def broadcast(socket, message):
 
 # handle clients
 def handle_client(s,a):
-    # create an  alias
-    alias = aliases[clients.index(s)]
+
+    # recive username and append client, alias
+    alias = s.recv(1024).decode('utf-8')
+    clients.append(s)
+    aliases.append(alias)
+
     print(f"\t\t[-- {alias} as Connected --]")
     
     # loop send e recive msg
@@ -59,10 +58,8 @@ def del_client_alias(socket):
 while True:
     # accept socket connection
     sc,ad = socket.accept()
-    clients.append(sc)
-    aliases.append(random.choice(names))
 
     # create a Thread
-    t.Thread(target = handle_client, args=(sc,ad)).start()
+    threading.Thread(target = handle_client, args=(sc,ad)).start()
         
     
